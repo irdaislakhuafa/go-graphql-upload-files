@@ -21,6 +21,7 @@ type Query {
 input NewTodo {
   text: String!
   userId: String!
+  file: Upload
 }
 
 type Mutation {

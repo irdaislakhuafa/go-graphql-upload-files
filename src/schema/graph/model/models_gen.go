@@ -2,9 +2,14 @@
 
 package model
 
+import (
+	"github.com/99designs/gqlgen/graphql"
+)
+
 type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
+	Text   string          `json:"text"`
+	UserID string          `json:"userId"`
+	File   *graphql.Upload `json:"file,omitempty"`
 }
 
 type Todo struct {

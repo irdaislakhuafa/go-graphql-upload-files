@@ -217,7 +217,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "schema.graphqls"
+//go:embed "scalar.graphqls" "schema.graphqls"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -229,6 +229,7 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
+	{Name: "scalar.graphqls", Input: sourceData("scalar.graphqls"), BuiltIn: false},
 	{Name: "schema.graphqls", Input: sourceData("schema.graphqls"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -2603,7 +2604,7 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"text", "userId"}
+	fieldsInOrder := [...]string{"text", "userId", "file"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2628,6 +2629,15 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 				return it, err
 			}
 			it.UserID = data
+		case "file":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("file"))
+			data, err := ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.File = data
 		}
 	}
 
@@ -3558,6 +3568,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (*graphql.Upload, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUpload(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v *graphql.Upload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalUpload(*v)
 	return res
 }
 
