@@ -1,0 +1,9 @@
+{
+	"Application": {
+		"Name": "Go GraphQL Upload Files",
+		"Port": "8080"
+	},
+	"Database": {
+		"Directory": "/tmp/json"
+	}
+}
