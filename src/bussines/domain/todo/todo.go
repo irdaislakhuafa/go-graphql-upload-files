@@ -51,12 +51,16 @@ func (t *todo) Save(ctx context.Context, todo entity.Todo) (entity.Todo, error) 
 	}
 
 	todos = append(todos, todo)
-	todoBytes, err := json.Marshal(todo)
+	todoBytes, err := json.Marshal(todos)
 	if err != nil {
 		return entity.Todo{}, err
 	}
 
 	if err := os.WriteFile(t.store, todoBytes, 0644); err != nil {
+		err := os.WriteFile(t.store, tempBytes, 0644)
+		if err != nil {
+			return entity.Todo{}, err
+		}
 		return entity.Todo{}, err
 	}
 
