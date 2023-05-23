@@ -6,8 +6,8 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/irdaislakhuafa/go-graphql-upload-files/src/schema/entity"
 	"github.com/irdaislakhuafa/go-graphql-upload-files/src/schema/graph/converts"
 	"github.com/irdaislakhuafa/go-graphql-upload-files/src/schema/graph/model"
 )
@@ -36,9 +36,27 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	return &result, nil
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// GetTodos is the resolver for the getTodos field.
+func (r *queryResolver) GetTodos(ctx context.Context) ([]*model.Todo, error) {
+	todos, err := r.Todo.GetAll(ctx, entity.Todo{})
+	if err != nil {
+		return nil, err
+	}
+
+	results := []*model.Todo{}
+	for _, v := range todos {
+		results = append(results, &model.Todo{
+			ID:     v.ID,
+			Text:   v.Text,
+			Done:   v.Done,
+			FileID: v.FileID,
+			User: &model.User{
+				ID: v.UserID,
+			},
+		})
+	}
+
+	return results, nil
 }
 
 // Mutation returns MutationResolver implementation.

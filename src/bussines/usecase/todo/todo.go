@@ -9,6 +9,7 @@ import (
 
 type Interface interface {
 	Save(ctx context.Context, todo entity.Todo) (entity.Todo, error)
+	GetAll(ctx context.Context, todo entity.Todo) ([]entity.Todo, error)
 }
 
 type todo struct {
@@ -28,4 +29,12 @@ func (t *todo) Save(ctx context.Context, todo entity.Todo) (entity.Todo, error) 
 	}
 
 	return todo, nil
+}
+
+func (t *todo) GetAll(ctx context.Context, todo entity.Todo) ([]entity.Todo, error) {
+	todos, _, err := t.domainTodo.GetAll(ctx, todo)
+	if err != nil {
+		return nil, err
+	}
+	return todos, nil
 }
