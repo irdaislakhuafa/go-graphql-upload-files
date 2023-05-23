@@ -78,7 +78,18 @@ func (t *todo) Save(ctx context.Context, todo entity.Todo) (entity.Todo, error) 
 }
 
 func (t *todo) Get(ctx context.Context, todo entity.Todo) (entity.Todo, error) {
-	panic("not implemented") // TODO: Implement
+	todos, _, err := t.GetAll(ctx, todo)
+	if err != nil {
+		return entity.Todo{}, err
+	}
+
+	for _, v := range todos {
+		if todo.ID == v.ID {
+			return v, nil
+		}
+	}
+
+	return entity.Todo{}, fmt.Errorf("not found")
 }
 
 func (t *todo) GetAll(ctx context.Context, todo entity.Todo) ([]entity.Todo, []byte, error) {
@@ -98,9 +109,63 @@ func (t *todo) GetAll(ctx context.Context, todo entity.Todo) ([]entity.Todo, []b
 }
 
 func (t *todo) Update(ctx context.Context, todo entity.Todo) (entity.Todo, error) {
-	panic("not implemented") // TODO: Implement
+	todos, tempBytes, err := t.GetAll(ctx, todo)
+	if err != nil {
+		return entity.Todo{}, err
+	}
+
+	for i := range todos {
+		if todos[i].ID == todo.ID {
+			todos[i].UserID = todo.UserID
+			todos[i].Text = todo.Text
+			todos[i].FileID = todo.FileID
+			todos[i].Done = todo.Done
+
+			bytesStream, err := json.Marshal(todos)
+			if err != nil {
+				return entity.Todo{}, err
+			}
+
+			if err := os.WriteFile(t.store, bytesStream, 0644); err != nil {
+				if err := os.WriteFile(t.store, tempBytes, 0644); err != nil {
+					return entity.Todo{}, err
+				}
+				return entity.Todo{}, err
+			}
+
+			return todos[i], nil
+		}
+	}
+
+	return entity.Todo{}, fmt.Errorf("no rows updated")
+
 }
 
 func (t *todo) Delete(ctx context.Context, todo entity.Todo) (entity.Todo, error) {
-	panic("not implemented") // TODO: Implement
+	todos, tempBytes, err := t.GetAll(ctx, todo)
+	if err != nil {
+		return entity.Todo{}, err
+	}
+
+	for i := range todos {
+		if todos[i].ID == todo.ID {
+			todo = todos[i]
+			todos = append(todos[:i], todos[i+1:]...)
+			break
+		}
+	}
+
+	bytesStream, err := json.Marshal(todos)
+	if err != nil {
+		return entity.Todo{}, err
+	}
+
+	if err := os.WriteFile(t.store, bytesStream, 0644); err != nil {
+		if err := os.WriteFile(t.store, tempBytes, 0644); err != nil {
+			return entity.Todo{}, err
+		}
+		return entity.Todo{}, err
+	}
+
+	return todo, nil
 }
