@@ -4,6 +4,7 @@
 		"Port": "8080"
 	},
 	"Database": {
-		"Directory": "/tmp/json"
+		"Directory": "/tmp/json",
+		"DirectoryFiles": "/tmp/json/files"
 	}
 }

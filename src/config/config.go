@@ -12,7 +12,8 @@ type Config struct {
 		Port string
 	}
 	Database struct {
-		Directory string
+		Directory      string
+		DirectoryFiles string
 	}
 }
 

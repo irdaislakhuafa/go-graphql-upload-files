@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/irdaislakhuafa/go-graphql-upload-files/src/schema/graph/converts"
 	"github.com/irdaislakhuafa/go-graphql-upload-files/src/schema/graph/model"
 )
@@ -20,7 +19,6 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 		return nil, err
 	}
 
-	todo.File = graphql.Upload{}
 	todo, err = r.Todo.Save(ctx, todo)
 	if err != nil {
 		return nil, err

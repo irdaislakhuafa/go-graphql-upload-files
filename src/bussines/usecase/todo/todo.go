@@ -22,5 +22,10 @@ func Init(ctx context.Context, domainTodo domainTodo.Interface) Interface {
 }
 
 func (t *todo) Save(ctx context.Context, todo entity.Todo) (entity.Todo, error) {
-	return t.domainTodo.Save(ctx, todo)
+	todo, err := t.domainTodo.Save(ctx, todo)
+	if err != nil {
+		return entity.Todo{}, err
+	}
+
+	return todo, nil
 }
